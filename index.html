@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <title>Parallel 4</title>
+    <body>
+        <script src="https://d3js.org/d3.v5.js"></script>
+        <script src="render-queue.js"></script>
+        <script src="parallel.js"></script>
+
+        <h1>The 24 Hours of Le Mans</h1>
+        <h2>The greatest endurance race in the world</h2>
+
+        <div id="img_desc">
+            <h3>General Design Direction: Parallel Coordinates Plot (created with RAWGraphs)</h3>
+        </div>
+        <div id="pic" class="div_boxes">
+            <img src="paralell.svg" alt="" onerror="this.src='parallel.png'"/>
+        </div>
+
+        <div id="var1_desc">
+            <h3>Variation 1:</h3>
+            <p> Colours are based on the circuit design</p>
+        </div>
+        <div id="vis1" class="div_boxes">
+            <svg id="svg_vis1" class="svg_boxes"></svg>
+            <canvas id="canvas_vis1" class="canvas_boxes"></canvas>
+        </div>
+
+        <div id="var2_desc">
+            <h3>Variation 2:</h3>
+            <p> Manufacturers are included. Colours are now based on the manufacturer which is also shown on the labels</p>
+        </div>
+        <div id="vis2" class="div_boxes">
+            <svg id="svg_vis2" class="svg_boxes"></svg>
+            <canvas id="canvas_vis2" class="canvas_boxes"></canvas>
+        </div>
+
+        <div id="var3_desc">
+            <h3>Variation 3:</h3>
+            <p>Interaction added to variation 2. Click and drag mouse on axis to focus on a particular range. Multiple brushes on different axes can be chosen. Brushes can also be moved along axis. Click anywhere outside brush on axis to remove</p>
+        </div>
+        <div id="vis3" class="div_boxes">
+            <svg id="svg_vis3" class="svg_boxes"></svg>
+            <canvas id="canvas_vis3" class="canvas_boxes"></canvas>
+        </div>
+    </body>
+</html>

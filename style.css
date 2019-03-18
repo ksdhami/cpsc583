@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css?family=Jura:400,500');
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+@import url('https://fonts.googleapis.com/css?family=Michroma');
+
+html {
+    background: #002395;
+    min-width: 1280px;
+    min-height: 720px;
+    overflow: auto;
+
+    font-family: "Montserrat", sans-serif;
+    font-weight: 300;
+    color: white;
+    letter-spacing: 0.1em;
+}
+
+body {
+    min-width: 760px;
+    padding: 20px;
+}
+
+h1{
+    font-family: "Michroma", sans-serif;
+    font-size: 3em;
+
+    color: #ED2939;
+    letter-spacing: normal;
+    text-transform: uppercase;
+
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+h2 {
+    font-family: "Jura", sans-serif;
+    font-size: 1.5em;
+    letter-spacing: normal;
+    text-transform: lowercase;
+    color: #ED2939;
+}
+
+.div_boxes {
+    display: block;
+    background: white;
+    background-clip: content-box;
+    width: 100%;
+    height: 100%;
+    min-height: 550px;
+    box-sizing: border-box;
+    padding: 10px;
+}
+
+.div_boxes svg,
+.div_boxes canvas {
+    font: 10px sans-serif;
+    position: absolute;
+    display: block;
+    box-sizing: border-box;
+    margin: auto;
+}
+
+.div_boxes canvas {
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+.axis .title {
+    font-size: 10px;
+    transform: rotate(-20deg) translate(0px,-6px);
+    fill: black;
+}
+
+.axis line,
+.axis path {
+    fill: none;
+    stroke: darkgray;
+    stroke-width: 1px;
+}
+
+.axis .tick text {
+    fill: black;
+    pointer-events: none;
+}
+
+.axis:hover line,
+.axis:hover path,
+.axis.active line,
+.axis.active path {
+    fill: none;
+    stroke: black;
+    stroke-width: 1.5px;
+}
+
+.axis:hover .tick text {
+    opacity: 1;
+}
+
+
+.axis.active .tick text {
+    opacity: 1;
+    font-weight: bold;
+}
+
+.brush.extent {
+    fill-opacity: .5;
+    stroke: white;
+    stroke-width: 1px;
+}
+
+div#var1_desc,
+div#var2_desc,
+div#var3_desc,
+div#img_desc {
+    box-sizing: border-box;
+    padding: 10px 20px;
+
+    color: white;
+}
+
+#pic img{
+    display: block;
+    margin: auto;
+}
