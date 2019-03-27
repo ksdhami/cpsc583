@@ -1,7 +1,9 @@
 // http://bl.ocks.org/syntagmatic/raw/3341641/
 // https://gist.github.com/syntagmatic/3341641
 // https://github.com/d3/d3-brush
-// http://bl.ocks.org/syntagmatic/0d1635533f6fb5ac4da3
+// https://bl.ocks.org/syntagmatic/94be812f8b410ae29ee2
+// https://bl.ocks.org/jasondavies/1341281
+// https://bl.ocks.org/mbostock/3709000
 // https://stackoverflow.com/questions/4394309/how-do-i-fit-an-image-img-inside-a-div-and-keep-the-aspect-ratio
 // https://stackoverflow.com/questions/4476526/do-i-use-img-object-or-embed-for-svg-files
 // https://d3js.live/#/Parallel_Coordinates
