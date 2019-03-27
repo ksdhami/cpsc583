@@ -9,6 +9,7 @@
 // https://d3js.live/#/Parallel_Coordinates
 // https://bocoup.com/blog/d3js-and-canvas
 // https://www.pluralsight.com/blog/software-development/d3-tutorial-canvas-d3-data-visualization
+// https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
 
 window.onload = function(){
     setupParallel1();
