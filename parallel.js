@@ -303,14 +303,15 @@ function setupParallel3() {
             let coords = project(d);
             coords.forEach(function(d) {
                 if (d !== null) {
-                    context3.lineTo(d[0],d[1]);
+                    context3.lineTo(d[0],d[1]); // line from one y-axis to the next
                 }
             });
             context3.stroke();
         });
 
-        render3(data);
+        render3(data); // draw line
 
+        // axis labels
         axes3.append("g")
             .each(function(d) {
                 d3.select(this).call(yAxis3.scale(d.scale));
@@ -341,14 +342,14 @@ function setupParallel3() {
         d3.selectAll(".axis.Manufacturer .tick text").style("fill", color);
 
         function project(d) {
-            return column3.map(function(p, i) {
-                return d[p.key] === null ? null : [xScale3(i),p.scale(d[p.key])];
+            return column3.map(function(column, i) {
+                return d[column.key] === null ? null : [xScale3(i),column.scale(d[column.key])];
             });
         }
 
         function brush() {
             render3.invalidate();
-            let actives = [];
+            let actives = []; // hold lines in brush
             svg3.selectAll(".axis .brush")
                 .filter(function(d) {
                     return d3.brushSelection(this);
@@ -362,8 +363,8 @@ function setupParallel3() {
 
             let selected = data.filter(function(d) {
                 if (actives.every(function(active) {
-                    let fld = active.dimension;
-                    return fld.type.within(d[fld.key], active.extent, fld);
+                    let column = active.dimension;
+                    return column.type.within(d[column.key], active.extent, column);
                 })) {
                     return true;
                 }
