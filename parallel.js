@@ -288,12 +288,12 @@ function setupParallel3() {
     d3.csv("lemans4.csv").then(function(data) {
 
         data.forEach(function(d) {
-            column3.forEach(function(e) {
-                d[e.key] = !d[e.key] ? null : e.type.coerce(d[e.key]);
-                e.domain = e.type.extent(data.map(function(d) {
-                    return d[e.key];
+            column3.forEach(function(column) {
+                d[column.key] = !d[column.key] ? null : column.type.coerce(d[column.key]);
+                column.domain = column.type.extent(data.map(function(d) {
+                    return d[column.key];
                 }));
-                e.scale = e.type.yScale.copy().domain(e.domain);
+                column.scale = column.type.yScale.copy().domain(column.domain);
             });
         });
 
