@@ -198,8 +198,8 @@
                         let perc1 = (d.Laps/maxLaps)*100;
                         let perc2 = (d.AveSpeed/maxAveSpeed)*100;
 
-                        createGauge(d, 'bar1', perc1, d.Laps);
-                        createGauge(d, 'bar2', perc2, (d.AveSpeed+" kph"));
+                        createGauge(d, 'bar1', perc1, (d.Laps + " laps"));
+                        createGauge(d, 'bar2', perc2, (d.AveSpeed + " kph"));
 
                         // document.getElementById("helper-text1").style.display = "block";
                         // document.getElementById("helper-text2").style.display = "block";
