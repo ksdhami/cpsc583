@@ -120,15 +120,15 @@
                         if(hlFlg === true && brFlg === false) {
                             // first every group turns grey
                             d3.selectAll(".line")
-                                .transition().duration(200)
+                                .transition().duration(300)
                                 .style("stroke", "lightgrey")
                                 .style("opacity", "0.2");
                             // Second the hovered specie takes its color
                             d3.select(this)
-                                .transition().duration(200)
+                                .transition().duration(300)
                                 .style("stroke", color(d.Manufacturer))
                                 .style("opacity", "1")
-                                .style("stroke-width", 2.5);
+                                .style("stroke-width", 2);
 
                             // d3.select(this);
                             // tooltip.transition()
@@ -149,7 +149,7 @@
                     .on("mouseleave", function (d) {
                         if(lineClicked === false) {
                             d3.selectAll(".line")
-                                .transition().duration(200).delay(500)
+                                .transition().duration(300).delay(500)
                                 .style("stroke", function(e){
                                     // console.log(e);
                                     return(color(e.Manufacturer))
@@ -158,7 +158,7 @@
                                 .style("stroke-width", 1);
                         } else if (hlFlg === false && brFlg === false) {
                             d3.selectAll(".line")
-                                .transition().duration(200).delay(500)
+                                .transition().duration(300).delay(500)
                                 .style("stroke", function(e){
                                     // console.log(e);
                                     return(color(e.Manufacturer))
@@ -205,7 +205,7 @@
                         // document.getElementById("helper-text2").style.display = "block";
                     } else {
                         d3.selectAll(".line")
-                            .transition().duration(200).delay(1000)
+                            .transition().duration(300).delay(1000)
                             .style("stroke", function(e){
                                 // console.log(e);
                                 return(color(e.Manufacturer))
