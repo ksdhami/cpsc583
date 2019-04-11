@@ -20,10 +20,10 @@
             <div id="row">
                 <div id="tooltip"></div>
                 <div id="bar1" class="progress" data-barValue="">
-                    <p class="helper_text">Laps/Max Laps</p>
+                    <p id="helper_text1">Laps/Max Laps</p>
                 </div>
                 <div id="bar2" class="progress" data-barValue="">
-                    <p class="helper_text">Average Speed/Max Average Speed</p>
+                    <p id="helper_text2">Average Speed/Max Average Speed</p>
                 </div>
             </div>
         </div>
@@ -184,6 +184,7 @@
                 function setClickEvent(d) {
                     console.log(d);
                     console.log(lineClicked);
+
                     if(lineClicked === true) {
                         d3.select(this);
                         tooltip.transition()
@@ -199,6 +200,9 @@
 
                         createGauge(d, 'bar1', perc1, d.Laps);
                         createGauge(d, 'bar2', perc2, (d.AveSpeed+" kph"));
+
+                        // document.getElementById("helper-text1").style.display = "block";
+                        // document.getElementById("helper-text2").style.display = "block";
                     } else {
                         d3.selectAll(".line")
                             .transition().duration(200).delay(1000)
@@ -212,6 +216,9 @@
                         tooltip.html("");
 
                         d3.selectAll('.progress svg').remove();
+
+                        // document.getElementById("helper-text1").style.display = "none";
+                        // document.getElementById("helper-text2").style.display = "none";
                     }
                 }
 
