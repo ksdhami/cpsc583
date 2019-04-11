@@ -85,6 +85,11 @@ div#tooltip {
 
 }
 
+p#helper_text1,
+p#helper_text2 {
+    display: none;
+}
+
 .div_boxes svg,
 .div_boxes canvas {
     font: 10px sans-serif;
