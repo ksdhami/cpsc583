@@ -149,7 +149,7 @@
                     .on("mouseleave", function (d) {
                         if(lineClicked === false) {
                             d3.selectAll(".line")
-                                .transition().duration(200).delay(1000)
+                                .transition().duration(200).delay(500)
                                 .style("stroke", function(e){
                                     // console.log(e);
                                     return(color(e.Manufacturer))
