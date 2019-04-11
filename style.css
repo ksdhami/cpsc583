@@ -3,14 +3,13 @@
 @import url('https://fonts.googleapis.com/css?family=Michroma');
 
 html {
-    background: #002395;
+    background: white;
     min-width: 1280px;
     min-height: 720px;
     overflow: auto;
 
     font-family: "Montserrat", sans-serif;
     font-weight: 300;
-    color: white;
     letter-spacing: 0.1em;
 }
 
@@ -23,7 +22,7 @@ h1{
     font-family: "Michroma", sans-serif;
     font-size: 3em;
 
-    color: #ED2939;
+    color: #002395;
     letter-spacing: normal;
     text-transform: uppercase;
 
@@ -39,15 +38,51 @@ h2 {
     color: #ED2939;
 }
 
+div#div_buttons {
+    margin-left: 110px;
+    margin-right: 20px;
+}
+
+div#wrapper {
+    display:table;
+}
+
+div#row {
+    display:table-row;
+}
+
+div#tooltip {
+    display:table-cell;
+    width: 848px;
+    height: 480px;
+    margin-top: 40px;
+    padding: 10px;
+    float: left;
+}
+
+/*div#bar1 {*/
+/*    display: block;*/
+/*    float: left*/
+/*}*/
+
+.progress {
+    /*display:table-cell;*/
+    width:432px;
+    height: 250px;
+    padding: 10px;
+    float: right;
+}
+
 .div_boxes {
     display: block;
     background: white;
     background-clip: content-box;
     width: 100%;
     height: 100%;
-    min-height: 550px;
+    min-height: 425px;
     box-sizing: border-box;
     padding: 10px;
+
 }
 
 .div_boxes svg,
@@ -59,65 +94,54 @@ h2 {
     margin: auto;
 }
 
-.div_boxes canvas {
-    opacity: 0.9;
-    pointer-events: none;
+.foreground path {
+    fill: none;
+    stroke: steelblue;
 }
 
-.axis .title {
-    font-size: 10px;
-    transform: rotate(-20deg) translate(0px,-6px);
+.foreground path.fade {
+    stroke: #000;
+    stroke-opacity: .1;
+}
+
+.axis line, .axis path {
+    fill: none;
+    stroke: #000;
+    stroke-width: 2px;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    text-shadow: 0 1px 0 #fff;
+    cursor: move;
     fill: black;
 }
 
-.axis line,
-.axis path {
-    fill: none;
-    stroke: darkgray;
-    stroke-width: 1px;
+button {
+    background: beige;
+    border: none;
+    height: 30px;
+    padding: 0px 10px;
+    margin: 0px auto;
+    text-align: center;
+
+    font-family: "Sarabun", sans-serif;
+    font-weight: 400;
+    font-size: 1em;
+    letter-spacing: 0.1em;
 }
 
-.axis .tick text {
-    fill: black;
-    pointer-events: none;
+button:hover {
+    background: indianred;
+    cursor: pointer;
 }
 
-.axis:hover line,
-.axis:hover path,
-.axis.active line,
-.axis.active path {
-    fill: none;
-    stroke: black;
-    stroke-width: 1.5px;
+button:focus {
+    outline: 0;
 }
 
-.axis:hover .tick text {
-    opacity: 1;
-}
-
-
-.axis.active .tick text {
-    opacity: 1;
-    font-weight: bold;
-}
-
-.brush.extent {
-    fill-opacity: .5;
-    stroke: white;
-    stroke-width: 1px;
-}
-
-div#var1_desc,
-div#var2_desc,
-div#var3_desc,
-div#img_desc {
-    box-sizing: border-box;
-    padding: 10px 20px;
-
-    color: white;
-}
-
-#pic img{
-    display: block;
-    margin: auto;
+img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
 }
