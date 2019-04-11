@@ -1,49 +1,370 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+    <title>24 Hours of Le Mans History</title>
     <head>
-        <meta charset="utf-8">
-        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <meta charset="utf-8"/>
+        <link type="text/css" rel="stylesheet" href="style.css"/>
+        <script type="text/javascript" src="https://d3js.org/d3.v5.js"></script>
     </head>
-    <title>History of 24 Hours of Le Mans</title>
     <body>
-        <script src="https://d3js.org/d3.v5.js"></script>
-        <script src="parallel.js"></script>
-
         <h1>The 24 Hours of Le Mans</h1>
         <h2>The greatest endurance race in the world</h2>
+        <div id="my_dataviz" class="div_boxes"></div>
 
-        <div id="img_desc">
-            <h3>General Design Direction: Parallel Coordinates Plot (created with RAWGraphs)</h3>
-        </div>
-        <div id="pic" class="div_boxes">
-            <img src="paralell.svg" alt="" onerror="this.src='parallel.png'"/>
-        </div>
-
-        <div id="var1_desc">
-            <h3>Variation 1:</h3>
-            <p> Colours are based on the circuit design</p>
-        </div>
-        <div id="vis1" class="div_boxes">
-            <svg id="svg_vis1" class="svg_boxes"></svg>
-            <canvas id="canvas_vis1" class="canvas_boxes"></canvas>
+        <div id="div_buttons">
+            <button id="highlight_path" onclick="setHLFlag()">Highlight</button>
+            <button id="brush_path" onclick="setBrushFlag()">Brush</button>
         </div>
 
-        <div id="var2_desc">
-            <h3>Variation 2:</h3>
-            <p> Manufacturers are included. Colours are now based on the manufacturer which is also shown on the labels</p>
-        </div>
-        <div id="vis2" class="div_boxes">
-            <svg id="svg_vis2" class="svg_boxes"></svg>
-            <canvas id="canvas_vis2" class="canvas_boxes"></canvas>
+        <div id="wrapper">
+            <div id="row">
+                <div id="tooltip"></div>
+                <div id="bar1" class="progress" data-barValue="">
+                    <p class="helper_text">Laps/Max Laps</p>
+                </div>
+                <div id="bar2" class="progress" data-barValue="">
+                    <p class="helper_text">Average Speed/Max Average Speed</p>
+                </div>
+            </div>
         </div>
 
-        <div id="var3_desc">
-            <h3>Variation 3:</h3>
-            <p>Interaction added to variation 2. Click and drag mouse on axis to focus on a particular range. Multiple brushes on different axes can be chosen. Brushes can also be moved along axis. Click anywhere outside brush on axis to remove</p>
-        </div>
-        <div id="vis3" class="div_boxes">
-            <svg id="svg_vis3" class="svg_boxes"></svg>
-            <canvas id="canvas_vis3" class="canvas_boxes"></canvas>
-        </div>
+        <script type="text/javascript">
+            let _data;
+
+            const maxAveSpeed = 225.228;
+            const maxLaps = 397;
+            const maxDistance = 5410.713;
+
+            let hlFlg = false;
+            let brFlg = false;
+            let lineClicked = false;
+
+            let columns = ["Year", "Distance", "Fastest Speed", "Circuit Design", "Deaths"],
+                color = d3.scaleOrdinal()
+                    .domain(["CHENARD-WALCKER", "BENTLEY", "LORRAINE-DIETRICH", "ALFA-ROMEO", "LAGONDA", "BUGATTI", "DELAHAYE", "FERRARI", "TALBOT-LAGO", "JAGUAR", "MERCEDES-BENZ", "ASTON-MARTIN", "FORD", "PORSCHE", "MATRA-SIMCA", "GULF", "RENAULT-ALPINE", "RONDEAU", "SAUBER", "MAZDA", "PEUGEOT", "McLAREN", "BMW", "AUDI" ])
+                    .range(["#2F74B5", "#183f46", "#3E62AB", "#8A1A20", "#ED6C73", "#3E91DF", "#0D2850", "#A72119", "#010101", "#1F4E47", "#ADADAD", "#56B3A1", "#7898D8", "#656565", "#71F28B", "#EC7A42", "#FADD4B", "#575757", "#B8B8B8", "#D0732B", "#184073", "#818181", "#B5B5B5", "#693241"]);
+                    // .range(d3["schemeDark2"]);
+
+
+            let margin = {top: 20, right: 110, bottom: 20, left: 110},
+                width = document.body.clientWidth - margin.left - margin.right,
+                height = 400 - margin.top - margin.bottom;
+
+            let xAxis = d3.scalePoint()
+                    .domain(columns)
+                    .range([0, width]),
+                yAxis = {};
+
+            let svg = d3.select("#my_dataviz")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            let tooltip = d3.select("#tooltip")
+                .attr("transform", "translate(" + margin.left + "," + height + ")")
+                .style("opacity", 0)
+                .style("color", "black");
+
+            d3.csv("lemans4.csv").then(function(data) {
+                _data = data;
+
+                // Create a scale and brush for each trait.
+                columns.forEach(function(d) {
+                    // console.log(d);
+                    yAxis[d] = d3.scaleLinear()
+                        .domain(d3.extent(data, function(e) {
+                            return +e[d];
+                        }))
+                        .range([height, 0]);
+
+                    yAxis[d].brush = d3.brushY()
+                        .extent([[-7, yAxis[d].range()[1]], [7, yAxis[d].range()[0]]])
+                        .on("brush", brush)
+                        .on("start", function (d) {
+                            d3.event.sourceEvent.stopPropagation();
+                        })
+                        .on("end", brush);
+                });
+
+                // Add foreground lines.
+                let foreground = svg.append("g")
+                    .attr("class", "foreground")
+                    .selectAll("myPath")
+                    .data(data)
+                    .enter()
+                    .append("path")
+                    .attr("d", function (d) {
+                        let line = d3.line();
+                        return line(columns.map(function(p) {
+                            return [xAxis(p), yAxis[p](d[p])];
+                        }));
+                    })
+                    .attr("class", function(d) {
+                        return "line " + d.Manufacturer + " " + d.Year;
+                    })
+                    .style("fill", "none" )
+                    .style("stroke", function (d) {
+                        return(color(d.Manufacturer))
+                    })
+                    .style("stroke-width", 1)
+                    .style("opacity", 0.5)
+                    .on("mouseover", function (d) {
+                        console.log("Laps = " + d.Laps);
+                        console.log("Ave Speed = " + d.AveSpeed);
+
+                        // console.log(d);
+                        // console.log(this);
+
+                        if(hlFlg === true && brFlg === false) {
+                            // first every group turns grey
+                            d3.selectAll(".line")
+                                .transition().duration(200)
+                                .style("stroke", "lightgrey")
+                                .style("opacity", "0.2");
+                            // Second the hovered specie takes its color
+                            d3.select(this)
+                                .transition().duration(200)
+                                .style("stroke", color(d.Manufacturer))
+                                .style("opacity", "1")
+                                .style("stroke-width", 2);
+
+                            // d3.select(this);
+                            // tooltip.transition()
+                            //     .duration(300)
+                            //     .style("opacity", .9)
+                            //     .style("color", "coral");
+                            // tooltip.html(d.Year);
+                            //
+                            // tooltip.html("<img src= winner_images/" + d.Year + ".jpg />");
+                            //
+                            // let perc1 = (d.Laps/maxLaps)*100;
+                            // let perc2 = (d.AveSpeed/maxAveSpeed)*100;
+                            //
+                            // createGauge(d, 'bar1', perc1);
+                            // createGauge(d, 'bar2', perc2);
+                        }
+                    })
+                    .on("mouseleave", function (d) {
+                        if(lineClicked === false) {
+                            d3.selectAll(".line")
+                                .transition().duration(200).delay(1000)
+                                .style("stroke", function(e){
+                                    // console.log(e);
+                                    return(color(e.Manufacturer))
+                                })
+                                .style("opacity", "1")
+                                .style("stroke-width", 1);
+                        } else if (hlFlg === false && brFlg === false) {
+                            d3.selectAll(".line")
+                                .transition().duration(200).delay(1000)
+                                .style("stroke", function(e){
+                                    // console.log(e);
+                                    return(color(e.Manufacturer))
+                                })
+                                .style("opacity", "1")
+                                .style("stroke-width", 1);
+
+                            d3.select(".tooltip");
+                            tooltip.html("");
+
+                            d3.selectAll('.progress svg').remove();
+                        }
+                    })
+                    .on("click", function (d) {
+                        console.log(d);
+                        console.log(lineClicked);
+                        if(hlFlg === true || brFlg === true) {
+                            lineClicked = !lineClicked;
+                            setClickEvent(d)
+                        }
+                    });
+
+                function setClickEvent(d) {
+                    console.log(d);
+                    console.log(lineClicked);
+                    if(lineClicked === true) {
+                        d3.select(this);
+                        tooltip.transition()
+                            .duration(300)
+                            .style("opacity", .9)
+                            .style("color", "coral");
+                        tooltip.html(d.Year);
+
+                        tooltip.html("<img src= winner_images/" + d.Year + ".jpg />");
+
+                        let perc1 = (d.Laps/maxLaps)*100;
+                        let perc2 = (d.AveSpeed/maxAveSpeed)*100;
+
+                        createGauge(d, 'bar1', perc1, d.Laps);
+                        createGauge(d, 'bar2', perc2, (d.AveSpeed+" kph"));
+                    } else {
+                        d3.selectAll(".line")
+                            .transition().duration(200).delay(1000)
+                            .style("stroke", function(e){
+                                // console.log(e);
+                                return(color(e.Manufacturer))
+                            })
+                            .style("opacity", "1");
+
+                        d3.select(".tooltip");
+                        tooltip.html("");
+
+                        d3.selectAll('.progress svg').remove();
+                    }
+                }
+
+                function createGauge(d, divID, percent, textInsert) {
+                    // console.log(d);
+                    let wrapper = document.getElementById(divID);
+                    let end = percent;
+                    console.log("End = " + end + " Percent = " + percent);
+
+                    let progress = 0;
+                    //Define the circle
+                    var circle = d3.arc()
+                        .startAngle(0)
+                        .innerRadius(100)
+                        .outerRadius(55);
+
+                    //setup SVG wrapper
+                    var progSvg = d3.select(wrapper)
+                        .append('svg')
+                        .attr('class','progSvg')
+                        .attr('width', 200)
+                        .attr('height', 200);
+
+                    // Add Group container
+                    var g = progSvg.append('g')
+                        .attr('transform', 'translate(' + 100 + ',' + 100 + ')');
+
+                    //Setup track
+                    var track = g.append('g');
+                    track.append('path')
+                        .attr('class', 'tyre')
+                        .attr('fill', 'black')
+                        .style('fill-opacity', 0.75)
+                        .attr('stroke', 'white')
+                        .attr('stroke-width', '5px')
+                        .attr('d', circle.endAngle(Math.PI * 2));
+
+                    //Add colour fill
+                    var value = track.append('path')
+                        .attr('class', 'radial-path')
+                        .attr('fill', color(d.Manufacturer))
+                        .attr('stroke', 'white')
+                        .attr('stroke-width', '5px');
+
+                    //Add text value
+                    var numberText = track.append('text')
+                        .attr('class', 'radial-text')
+                        .attr('text-anchor', 'middle');
+                    numberText.text(textInsert);
+
+                    while(end > 0) {
+                        value.attr('d', circle.endAngle(Math.PI * 2 * progress));
+                        end--;
+                        progress += 0.01;
+                    }
+
+                    // https://www.sitepoint.com/delay-sleep-pause-wait/
+                    // https://codehandbook.org/understanding-settimeout-inside-for-loop-in-javascript/
+                    // (function iterate() {
+                    //     value.attr('d', circle.endAngle(Math.PI * 2 * progress));
+                    //     // https://github.com/d3/d3-format
+                    //     // numberText.text(d3.format('.0%')(progress));
+                    //     if (end > 0) {
+                    //         end--;
+                    //         progress += 0.01;
+                    //         setTimeout(iterate, 10);
+                    //     }
+                    //     console.log(progress);
+                    //
+                    // })();
+
+                }
+
+                // Add a group element for each trait.
+                let g = svg.selectAll(".col")
+                    .data(columns)
+                    .enter().append("g")
+                    .attr("class", "col")
+                    .attr("transform", function(d) {
+                        return "translate(" + xAxis(d) + ")";
+                    });
+
+                // Add an axis and title.
+                g.append("g")
+                    .attr("class", "axis")
+                    .each(function(d) {
+                        d3.select(this).call(d3.axisLeft(yAxis[d]));
+                    })
+                    .append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("yAxis", -9)
+                    .text(function(d) {
+                        return d;
+                    });
+
+                // Add a brush for each axis.
+                g.append("g")
+                    .attr("class", "brush")
+                    .each(function(d) {
+                        d3.select(this).call(yAxis[d].brush);
+                    })
+                    .selectAll("rect")
+                    .attr("xAxis", -8)
+                    .attr("width", 16);
+
+                // Handles a brush event, toggling the display of foreground lines.
+                function brush() {
+                    if (brFlg === true && hlFlg === false) {
+                        let actives = [];
+                        // console.log(actives);
+                        //filter brushed extents
+                        svg.selectAll(".brush")
+                            .filter(function (d) {
+                                return d3.brushSelection(this);
+                            })
+                            .each(function (d) {
+                                actives.push({
+                                    dimension: d,
+                                    extent: d3.brushSelection(this)
+                                });
+                            });
+                        //set un-brushed foreground line disappear
+                        foreground.classed("fade", function (d) {
+                            return !actives.every(function (e) {
+                                return e.extent[0] <= yAxis[e.dimension](d[e.dimension]) && yAxis[e.dimension](d[e.dimension]) <= e.extent[1];
+                            });
+                        });
+                    }
+                }
+            });
+
+            function setHLFlag() {
+                if(brFlg === false) {
+                    hlFlg = !hlFlg;
+                    if (hlFlg === true) {
+                        document.getElementById("highlight_path").style.border = "2px solid black";
+                    } else {
+                        document.getElementById("highlight_path").style.border = "0px solid black";
+                    }
+                }
+            }
+
+            function setBrushFlag() {
+                if(hlFlg === false) {
+                    brFlg = !brFlg;
+                    if (brFlg === true) {
+                        document.getElementById("brush_path").style.border = "2px solid black";
+                    } else {
+                        document.getElementById("brush_path").style.border = "0px solid black";
+                    }
+                }
+            }
+
+        </script>
     </body>
 </html>
