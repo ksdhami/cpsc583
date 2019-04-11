@@ -210,7 +210,8 @@
                                 // console.log(e);
                                 return(color(e.Manufacturer))
                             })
-                            .style("opacity", "1");
+                            .style("opacity", "1")
+                            .style("stroke-width", 1);
 
                         d3.select(".tooltip");
                         tooltip.html("");
@@ -229,25 +230,22 @@
                     console.log("End = " + end + " Percent = " + percent);
 
                     let progress = 0;
-                    //Define the circle
+
                     var circle = d3.arc()
                         .startAngle(0)
                         .innerRadius(100)
                         .outerRadius(55);
 
-                    //setup SVG wrapper
                     var progSvg = d3.select(wrapper)
                         .append('svg')
                         .attr('class','progSvg')
                         .attr('width', 200)
-                        .attr('height', 200);
-
-                    // Add Group container
-                    var g = progSvg.append('g')
+                        .attr('height', 200)
+                        .append('g')
                         .attr('transform', 'translate(' + 100 + ',' + 100 + ')');
 
                     //Setup track
-                    var track = g.append('g');
+                    var track = progSvg.append('g');
                     track.append('path')
                         .attr('class', 'tyre')
                         .attr('fill', 'black')
@@ -354,9 +352,11 @@
                 if(brFlg === false) {
                     hlFlg = !hlFlg;
                     if (hlFlg === true) {
-                        document.getElementById("highlight_path").style.border = "2px solid white";
+                        document.getElementById("highlight_path").style.border = "1px solid white";
+                        document.getElementById("highlight_path").style.background = "rgba(237, 54, 61, 0.75)";
                     } else {
                         document.getElementById("highlight_path").style.border = "0px solid white";
+                        document.getElementById("highlight_path").style.background = "rgba(0, 35, 149, 0.75)";
                     }
                 }
             }
@@ -365,9 +365,11 @@
                 if(hlFlg === false) {
                     brFlg = !brFlg;
                     if (brFlg === true) {
-                        document.getElementById("brush_path").style.border = "2px solid white";
+                        document.getElementById("brush_path").style.border = "1px solid white";
+                        document.getElementById("brush_path").style.background = "rgba(237, 54, 61, 0.75)";
                     } else {
                         document.getElementById("brush_path").style.border = "0px solid white";
+                        document.getElementById("brush_path").style.background = "rgba(0, 35, 149, 0.75)";
                     }
                 }
             }
