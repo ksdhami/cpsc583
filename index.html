@@ -20,10 +20,10 @@
             <div id="row">
                 <div id="tooltip"></div>
                 <div id="bar1" class="progress" data-barValue="">
-                    <p id="helper_text1">Laps/Max Laps</p>
+                    <div id="helper_text1">Car Laps Completed vs Max Laps Completed (397 laps)</div>
                 </div>
                 <div id="bar2" class="progress" data-barValue="">
-                    <p id="helper_text2">Average Speed/Max Average Speed</p>
+                    <div id="helper_text2">Car Average Speed vs Max Average Speed (225.228 kph)</div>
                 </div>
             </div>
         </div>
@@ -33,7 +33,7 @@
 
             const maxAveSpeed = 225;
             const maxLaps = 396;
-            const maxDistance = 5410;
+            const maxDistance = 5410.713;
 
             let hlFlg = false;
             let brFlg = false;
@@ -43,8 +43,6 @@
                 color = d3.scaleOrdinal()
                     .domain(["CHENARD-WALCKER", "BENTLEY", "LORRAINE-DIETRICH", "ALFA-ROMEO", "LAGONDA", "BUGATTI", "DELAHAYE", "FERRARI", "TALBOT-LAGO", "JAGUAR", "MERCEDES-BENZ", "ASTON-MARTIN", "FORD", "PORSCHE", "MATRA-SIMCA", "GULF", "RENAULT-ALPINE", "RONDEAU", "SAUBER", "MAZDA", "PEUGEOT", "McLAREN", "BMW", "AUDI" ])
                     .range(["#2F74B5", "#183f46", "#3E62AB", "#8A1A20", "#ED6C73", "#3E91DF", "#0D2850", "#A72119", "#010101", "#1F4E47", "#ADADAD", "#56B3A1", "#7898D8", "#656565", "#71F28B", "#EC7A42", "#FADD4B", "#575757", "#B8B8B8", "#D0732B", "#184073", "#818181", "#B5B5B5", "#693241"]);
-                    // .range(d3["schemeDark2"]);
-
 
             let margin = {top: 20, right: 110, bottom: 20, left: 110},
                 width = document.body.clientWidth - margin.left - margin.right,
@@ -67,17 +65,32 @@
                 .style("opacity", 0)
                 .style("color", "black");
 
+            var parseTime = d3.timeParse("%Y");
+
             d3.csv("lemans4.csv").then(function(data) {
                 _data = data;
 
-                // Create a scale and brush for each trait.
+                // https://bl.ocks.org/d3noob/0e276dc70bb9184727ee47d6dd06e915
+                data.forEach(function(d) {
+                    d.Year = parseTime(d.Year);
+                });
+
                 columns.forEach(function(d) {
-                    // console.log(d);
-                    yAxis[d] = d3.scaleLinear()
-                        .domain(d3.extent(data, function(e) {
-                            return +e[d];
-                        }))
-                        .range([height, 0]);
+                    console.log(d);
+
+                    if (d === "Year") {
+                        yAxis[d] = d3.scaleTime()
+                            .domain(d3.extent(data, function(e) {
+                                return e.Year;
+                            }))
+                            .range([height, 0]);
+                    } else {
+                        yAxis[d] = d3.scaleLinear()
+                            .domain(d3.extent(data, function (e) {
+                                return +e[d];
+                            }))
+                            .range([height, 0]);
+                    }
 
                     yAxis[d].brush = d3.brushY()
                         .extent([[-7, yAxis[d].range()[1]], [7, yAxis[d].range()[0]]])
@@ -88,9 +101,8 @@
                         .on("end", brush);
                 });
 
-                // Add foreground lines.
-                let foreground = svg.append("g")
-                    .attr("class", "foreground")
+                let parcoords = svg.append("g")
+                    .attr("class", "parcoords")
                     .selectAll("myPath")
                     .data(data)
                     .enter()
@@ -109,7 +121,7 @@
                         return(color(d.Manufacturer))
                     })
                     .style("stroke-width", 1)
-                    .style("opacity", 0.5)
+                    .style("opacity", 0.2)
                     .on("mouseover", function (d) {
                         console.log("Laps = " + d.Laps);
                         console.log("Ave Speed = " + d.AveSpeed);
@@ -118,52 +130,42 @@
                         // console.log(this);
 
                         if(hlFlg === true && brFlg === false) {
-                            // first every group turns grey
                             d3.selectAll(".line")
-                                .transition().duration(300)
+                                .transition().duration(200)
                                 .style("stroke", "lightgrey")
-                                .style("opacity", "0.2");
-                            // Second the hovered specie takes its color
-                            d3.select(this)
-                                .transition().duration(300)
-                                .style("stroke", color(d.Manufacturer))
-                                .style("opacity", "1")
-                                .style("stroke-width", 2);
+                                .style("opacity", 0.2);
 
-                            // d3.select(this);
-                            // tooltip.transition()
-                            //     .duration(300)
-                            //     .style("opacity", .9)
-                            //     .style("color", "coral");
-                            // tooltip.html(d.Year);
-                            //
-                            // tooltip.html("<img src= winner_images/" + d.Year + ".jpg />");
-                            //
-                            // let perc1 = (d.Laps/maxLaps)*100;
-                            // let perc2 = (d.AveSpeed/maxAveSpeed)*100;
-                            //
-                            // createGauge(d, 'bar1', perc1);
-                            // createGauge(d, 'bar2', perc2);
+                            d3.select(this)
+                                .transition().duration(200)
+                                .style("stroke", color(d.Manufacturer))
+                                .style("opacity", 1)
+                                .style("stroke-width", 2);
                         }
                     })
                     .on("mouseleave", function (d) {
                         if(lineClicked === false) {
+                            document.getElementById("helper_text1").style.display = "none";
+                            document.getElementById("helper_text2").style.display = "none";
+                            
                             d3.selectAll(".line")
-                                .transition().duration(300).delay(500)
+                                .transition().duration(200).delay(500)
                                 .style("stroke", function(e){
                                     // console.log(e);
                                     return(color(e.Manufacturer))
                                 })
-                                .style("opacity", "1")
+                                .style("opacity", 1)
                                 .style("stroke-width", 1);
                         } else if (hlFlg === false && brFlg === false) {
+                            document.getElementById("helper_text1").style.display = "none";
+                            document.getElementById("helper_text2").style.display = "none";
+
                             d3.selectAll(".line")
-                                .transition().duration(300).delay(500)
+                                .transition().duration(200).delay(500)
                                 .style("stroke", function(e){
                                     // console.log(e);
                                     return(color(e.Manufacturer))
                                 })
-                                .style("opacity", "1")
+                                .style("opacity", 1)
                                 .style("stroke-width", 1);
 
                             d3.select(".tooltip");
@@ -186,14 +188,20 @@
                     console.log(lineClicked);
 
                     if(lineClicked === true) {
+                        console.log("Year Clicked: "+d.Year);
+
+                        let yearStr = d.Year;
+                        let yearSubStr = yearStr.toString().substring(11, 15);
+                        console.log(yearSubStr);
+
                         d3.select(this);
                         tooltip.transition()
-                            .duration(300)
-                            .style("opacity", .9)
+                            .duration(100)
+                            .style("opacity", 1)
                             .style("color", "coral");
-                        tooltip.html(d.Year);
+                        tooltip.html(yearSubStr);
 
-                        tooltip.html("<img src= winner_images/" + d.Year + ".jpg />");
+                        tooltip.html("<img src= winner_images/" + yearSubStr + ".jpg />");
 
                         let perc1 = (d.Laps/maxLaps)*100;
                         let perc2 = (d.AveSpeed/maxAveSpeed)*100;
@@ -201,16 +209,16 @@
                         createGauge(d, 'bar1', perc1, (d.Laps + " laps"));
                         createGauge(d, 'bar2', perc2, (d.AveSpeed + " kph"));
 
-                        // document.getElementById("helper-text1").style.display = "block";
-                        // document.getElementById("helper-text2").style.display = "block";
+                        document.getElementById("helper_text1").style.display = "block";
+                        document.getElementById("helper_text2").style.display = "block";
                     } else {
                         d3.selectAll(".line")
-                            .transition().duration(300).delay(1000)
+                            .transition().duration(200).delay(1000)
                             .style("stroke", function(e){
                                 // console.log(e);
                                 return(color(e.Manufacturer))
                             })
-                            .style("opacity", "1")
+                            .style("opacity", 1)
                             .style("stroke-width", 1);
 
                         d3.select(".tooltip");
@@ -218,8 +226,8 @@
 
                         d3.selectAll('.progress svg').remove();
 
-                        // document.getElementById("helper-text1").style.display = "none";
-                        // document.getElementById("helper-text2").style.display = "none";
+                        document.getElementById("helper_text1").style.display = "none";
+                        document.getElementById("helper_text2").style.display = "none";
                     }
                 }
 
@@ -244,9 +252,8 @@
                         .append('g')
                         .attr('transform', 'translate(' + 100 + ',' + 100 + ')');
 
-                    //Setup track
-                    var track = progSvg.append('g');
-                    track.append('path')
+                    var background = progSvg.append('g');
+                    background.append('path')
                         .attr('class', 'tyre')
                         .attr('fill', 'black')
                         .style('fill-opacity', 0.75)
@@ -254,43 +261,24 @@
                         .attr('stroke-width', '5px')
                         .attr('d', circle.endAngle(Math.PI * 2));
 
-                    //Add colour fill
-                    var value = track.append('path')
+                    var foreground = background.append('path')
                         .attr('class', 'radial-path')
                         .attr('fill', color(d.Manufacturer))
                         .attr('stroke', 'white')
                         .attr('stroke-width', '5px');
 
-                    //Add text value
-                    var numberText = track.append('text')
+                    var numberText = background.append('text')
                         .attr('class', 'radial-text')
                         .attr('text-anchor', 'middle');
                     numberText.text(textInsert);
 
                     while(end > 0) {
-                        value.attr('d', circle.endAngle(Math.PI * 2 * progress));
+                        foreground.attr('d', circle.endAngle(Math.PI * 2 * progress));
                         end--;
                         progress += 0.01;
                     }
-
-                    // https://www.sitepoint.com/delay-sleep-pause-wait/
-                    // https://codehandbook.org/understanding-settimeout-inside-for-loop-in-javascript/
-                    // (function iterate() {
-                    //     value.attr('d', circle.endAngle(Math.PI * 2 * progress));
-                    //     // https://github.com/d3/d3-format
-                    //     // numberText.text(d3.format('.0%')(progress));
-                    //     if (end > 0) {
-                    //         end--;
-                    //         progress += 0.01;
-                    //         setTimeout(iterate, 10);
-                    //     }
-                    //     console.log(progress);
-                    //
-                    // })();
-
                 }
 
-                // Add a group element for each trait.
                 let g = svg.selectAll(".col")
                     .data(columns)
                     .enter().append("g")
@@ -299,7 +287,6 @@
                         return "translate(" + xAxis(d) + ")";
                     });
 
-                // Add an axis and title.
                 g.append("g")
                     .attr("class", "axis")
                     .each(function(d) {
@@ -312,7 +299,6 @@
                         return d;
                     });
 
-                // Add a brush for each axis.
                 g.append("g")
                     .attr("class", "brush")
                     .each(function(d) {
@@ -322,12 +308,11 @@
                     .attr("xAxis", -8)
                     .attr("width", 16);
 
-                // Handles a brush event, toggling the display of foreground lines.
                 function brush() {
                     if (brFlg === true && hlFlg === false) {
                         let actives = [];
                         // console.log(actives);
-                        //filter brushed extents
+
                         svg.selectAll(".brush")
                             .filter(function (d) {
                                 return d3.brushSelection(this);
@@ -338,8 +323,8 @@
                                     extent: d3.brushSelection(this)
                                 });
                             });
-                        //set un-brushed foreground line disappear
-                        foreground.classed("fade", function (d) {
+
+                        parcoords.classed("fade", function (d) {
                             return !actives.every(function (e) {
                                 return e.extent[0] <= yAxis[e.dimension](d[e.dimension]) && yAxis[e.dimension](d[e.dimension]) <= e.extent[1];
                             });
@@ -375,5 +360,7 @@
             }
 
         </script>
+
+        <p id="picSource">Race car images courtesy of: https://www.motor1.com/news/252424/every-winner-24-hours-le-mans/</p>
     </body>
 </html>
