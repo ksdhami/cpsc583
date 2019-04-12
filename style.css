@@ -60,17 +60,17 @@ div#tooltip {
     float: left;
 }
 
-/*div#bar1 {*/
-/*    display: block;*/
-/*    float: left*/
-/*}*/
-
 .progress {
     /*display:table-cell;*/
     width:432px;
     height: 250px;
     padding: 10px;
     float: right;
+}
+
+#picSource {
+    font-size: 10px;
+    height: 100%;
 }
 
 .div_boxes {
@@ -85,9 +85,11 @@ div#tooltip {
 
 }
 
-p#helper_text1,
-p#helper_text2 {
+div#helper_text1,
+div#helper_text2 {
     display: none;
+    margin: 0 auto;
+    font-size: 1em;
 }
 
 .div_boxes svg,
@@ -99,12 +101,12 @@ p#helper_text2 {
     margin: auto;
 }
 
-.foreground path {
+.parcoords path {
     fill: none;
     stroke: steelblue;
 }
 
-.foreground path.fade {
+.parcoords path.fade {
     stroke: #000;
     stroke-opacity: .1;
 }
