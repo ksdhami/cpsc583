@@ -244,13 +244,13 @@
                     (function iterate() {
                         foreground.attr('d', circle.endAngle(Math.PI * 2 * progress));
                         // https://github.com/d3/d3-format
-                        // numberText.text(d3.format('.0%')(progress));
                         if (end > 0) {
                             end--;
                             progress += 0.01;
                             setTimeout(iterate, 10);
                         }
                         console.log(progress);
+                        console.log(end);
 
                     })();
                 }
