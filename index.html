@@ -9,7 +9,7 @@
     <body>
         <h1>The 24 Hours of Le Mans</h1>
         <h2>The greatest endurance race in the world</h2>
-        <div id="my_dataviz" class="div_boxes"></div>
+        <div id="div_visuals" class="div_boxes"></div>
 
         <div id="wrapper">
             <div id="row">
@@ -46,7 +46,7 @@
                     .range([0, width]),
                 yAxis = {};
 
-            let svg = d3.select("#my_dataviz")
+            let svg = d3.select("#div_visuals")
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
