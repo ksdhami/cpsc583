@@ -11,19 +11,14 @@
         <h2>The greatest endurance race in the world</h2>
         <div id="my_dataviz" class="div_boxes"></div>
 
-        <div id="div_buttons">
-            <button id="highlight_path" onclick="setHLFlag()">Highlight</button>
-            <button id="brush_path" onclick="setBrushFlag()">Brush</button>
-        </div>
-
         <div id="wrapper">
             <div id="row">
                 <div id="tooltip"></div>
                 <div id="bar1" class="progress" data-barValue="">
-                    <div id="helper_text1">Car Laps Completed vs Max Laps Completed (397 laps)</div>
+                    <div id="helper_text1">Car Laps Completed vs Max Laps Completed (397 laps)<br><br></div>
                 </div>
                 <div id="bar2" class="progress" data-barValue="">
-                    <div id="helper_text2">Car Average Speed vs Max Average Speed (225.228 kph)</div>
+                    <div id="helper_text2">Car Average Speed vs Max Average Speed (225.228 kph)<br><br></div>
                 </div>
             </div>
         </div>
@@ -35,8 +30,6 @@
             const maxLaps = 396;
             const maxDistance = 5410.713;
 
-            let hlFlg = false;
-            let brFlg = false;
             let lineClicked = false;
 
             let columns = ["Year", "Distance", "Fastest Speed", "Circuit Design", "Deaths"],
@@ -91,17 +84,9 @@
                             }))
                             .range([height, 0]);
                     }
-
-                    yAxis[d].brush = d3.brushY()
-                        .extent([[-7, yAxis[d].range()[1]], [7, yAxis[d].range()[0]]])
-                        .on("brush", brush)
-                        .on("start", function (d) {
-                            d3.event.sourceEvent.stopPropagation();
-                        })
-                        .on("end", brush);
                 });
 
-                let parcoords = svg.append("g")
+                svg.append("g")
                     .attr("class", "parcoords")
                     .selectAll("myPath")
                     .data(data)
@@ -121,7 +106,7 @@
                         return(color(d.Manufacturer))
                     })
                     .style("stroke-width", 1)
-                    .style("opacity", 0.2)
+                    .style("opacity", 0.1)
                     .on("mouseover", function (d) {
                         console.log("Laps = " + d.Laps);
                         console.log("Ave Speed = " + d.AveSpeed);
@@ -129,11 +114,11 @@
                         // console.log(d);
                         // console.log(this);
 
-                        if(hlFlg === true && brFlg === false) {
+                        if(lineClicked === false) {
                             d3.selectAll(".line")
                                 .transition().duration(200)
                                 .style("stroke", "lightgrey")
-                                .style("opacity", 0.2);
+                                .style("opacity", 0.1);
 
                             d3.select(this)
                                 .transition().duration(200)
@@ -146,18 +131,6 @@
                         if(lineClicked === false) {
                             document.getElementById("helper_text1").style.display = "none";
                             document.getElementById("helper_text2").style.display = "none";
-                            
-                            d3.selectAll(".line")
-                                .transition().duration(200).delay(500)
-                                .style("stroke", function(e){
-                                    // console.log(e);
-                                    return(color(e.Manufacturer))
-                                })
-                                .style("opacity", 1)
-                                .style("stroke-width", 1);
-                        } else if (hlFlg === false && brFlg === false) {
-                            document.getElementById("helper_text1").style.display = "none";
-                            document.getElementById("helper_text2").style.display = "none";
 
                             d3.selectAll(".line")
                                 .transition().duration(200).delay(500)
@@ -167,20 +140,14 @@
                                 })
                                 .style("opacity", 1)
                                 .style("stroke-width", 1);
-
-                            d3.select(".tooltip");
-                            tooltip.html("");
-
-                            d3.selectAll('.progress svg').remove();
                         }
                     })
                     .on("click", function (d) {
                         console.log(d);
                         console.log(lineClicked);
-                        if(hlFlg === true || brFlg === true) {
-                            lineClicked = !lineClicked;
-                            setClickEvent(d)
-                        }
+
+                        lineClicked = !lineClicked;
+                        setClickEvent(d)
                     });
 
                 function setClickEvent(d) {
@@ -272,11 +239,20 @@
                         .attr('text-anchor', 'middle');
                     numberText.text(textInsert);
 
-                    while(end > 0) {
+                    // https://www.sitepoint.com/delay-sleep-pause-wait/
+                    // https://codehandbook.org/understanding-settimeout-inside-for-loop-in-javascript/
+                    (function iterate() {
                         foreground.attr('d', circle.endAngle(Math.PI * 2 * progress));
-                        end--;
-                        progress += 0.01;
-                    }
+                        // https://github.com/d3/d3-format
+                        // numberText.text(d3.format('.0%')(progress));
+                        if (end > 0) {
+                            end--;
+                            progress += 0.01;
+                            setTimeout(iterate, 10);
+                        }
+                        console.log(progress);
+
+                    })();
                 }
 
                 let g = svg.selectAll(".col")
@@ -299,65 +275,7 @@
                         return d;
                     });
 
-                g.append("g")
-                    .attr("class", "brush")
-                    .each(function(d) {
-                        d3.select(this).call(yAxis[d].brush);
-                    })
-                    .selectAll("rect")
-                    .attr("xAxis", -8)
-                    .attr("width", 16);
-
-                function brush() {
-                    if (brFlg === true && hlFlg === false) {
-                        let actives = [];
-                        // console.log(actives);
-
-                        svg.selectAll(".brush")
-                            .filter(function (d) {
-                                return d3.brushSelection(this);
-                            })
-                            .each(function (d) {
-                                actives.push({
-                                    dimension: d,
-                                    extent: d3.brushSelection(this)
-                                });
-                            });
-
-                        parcoords.classed("fade", function (d) {
-                            return !actives.every(function (e) {
-                                return e.extent[0] <= yAxis[e.dimension](d[e.dimension]) && yAxis[e.dimension](d[e.dimension]) <= e.extent[1];
-                            });
-                        });
-                    }
-                }
             });
-
-            function setHLFlag() {
-                if(brFlg === false) {
-                    hlFlg = !hlFlg;
-                    if (hlFlg === true) {
-                        document.getElementById("highlight_path").style.border = "1px solid white";
-                        document.getElementById("highlight_path").style.background = "rgba(237, 54, 61, 0.75)";
-                    } else {
-                        document.getElementById("highlight_path").style.border = "0px solid white";
-                        document.getElementById("highlight_path").style.background = "rgba(0, 35, 149, 0.75)";
-                    }
-                }
-            }
-
-            function setBrushFlag() {
-                if(hlFlg === false) {
-                    brFlg = !brFlg;
-                    if (brFlg === true) {
-                        document.getElementById("brush_path").style.border = "1px solid white";
-                        document.getElementById("brush_path").style.background = "rgba(237, 54, 61, 0.75)";
-                    } else {
-                        document.getElementById("brush_path").style.border = "0px solid white";
-                        document.getElementById("brush_path").style.background = "rgba(0, 35, 149, 0.75)";
-                    }
-                }
-            }
 
         </script>
 
