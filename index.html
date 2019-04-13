@@ -239,20 +239,14 @@
                         .attr('text-anchor', 'middle');
                     numberText.text(textInsert);
 
-                    // https://www.sitepoint.com/delay-sleep-pause-wait/
-                    // https://codehandbook.org/understanding-settimeout-inside-for-loop-in-javascript/
-                    (function iterate() {
+                    while(end > 0) {
                         foreground.attr('d', circle.endAngle(Math.PI * 2 * progress));
-                        // https://github.com/d3/d3-format
-                        if (end > 0) {
-                            end--;
-                            progress += 0.01;
-                            setTimeout(iterate, 10);
-                        }
+                        end--;
+                        progress += 0.01;
+
                         console.log(progress);
                         console.log(end);
-
-                    })();
+                    }
                 }
 
                 let g = svg.selectAll(".col")
