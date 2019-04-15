@@ -69,7 +69,7 @@
                 });
 
                 columns.forEach(function(d) {
-                    console.log(d);
+                    // console.log(d);
 
                     if (d === "Year") {
                         yAxis[d] = d3.scaleTime()
@@ -108,8 +108,8 @@
                     .style("stroke-width", 1)
                     .style("opacity", 0.1)
                     .on("mouseover", function (d) {
-                        console.log("Laps = " + d.Laps);
-                        console.log("Ave Speed = " + d.AveSpeed);
+                        // console.log("Laps = " + d.Laps);
+                        // console.log("Ave Speed = " + d.AveSpeed);
 
                         // console.log(d);
                         // console.log(this);
@@ -143,23 +143,23 @@
                         }
                     })
                     .on("click", function (d) {
-                        console.log(d);
-                        console.log(lineClicked);
+                        // console.log(d);
+                        // console.log(lineClicked);
 
                         lineClicked = !lineClicked;
                         setClickEvent(d)
                     });
 
                 function setClickEvent(d) {
-                    console.log(d);
-                    console.log(lineClicked);
+                    // console.log(d);
+                    // console.log(lineClicked);
 
                     if(lineClicked === true) {
-                        console.log("Year Clicked: "+d.Year);
+                        // console.log("Year Clicked: "+d.Year);
 
                         let yearStr = d.Year;
                         let yearSubStr = yearStr.toString().substring(11, 15);
-                        console.log(yearSubStr);
+                        // console.log(yearSubStr);
 
                         d3.select(this);
                         tooltip.transition()
@@ -202,7 +202,7 @@
                     // console.log(d);
                     let wrapper = document.getElementById(divID);
                     let end = percent;
-                    console.log("End = " + end + " Percent = " + percent);
+                    // console.log("End = " + end + " Percent = " + percent);
 
                     let progress = 0;
 
@@ -244,8 +244,8 @@
                         end--;
                         progress += 0.01;
 
-                        console.log(progress);
-                        console.log(end);
+                        // console.log(progress);
+                        // console.log(end);
                     }
                 }
 
